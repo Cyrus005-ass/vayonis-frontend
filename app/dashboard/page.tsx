@@ -38,6 +38,7 @@ export default function DashboardPage() {
   const [scheduledAt, setScheduledAt] = useState("");
   const [publishing, setPublishing] = useState(false);
   const [results, setResults] = useState<PostTargetResult[] | null>(null);
+  const [scheduleConfirmed, setScheduleConfirmed] = useState<string | null>(null);
   const [postError, setPostError] = useState<string | null>(null);
 
   async function loadAccounts() {
@@ -114,8 +115,17 @@ export default function DashboardPage() {
         await addPostTarget(post.id, accountId, account.platform);
       }
 
-      const published = await publishPost(post.id);
-      setResults(published);
+      const isFutureSchedule = scheduledAt && new Date(scheduledAt).getTime() > Date.now();
+
+      if (isFutureSchedule) {
+        setResults(null);
+        setScheduleConfirmed(scheduledAt);
+      } else {
+        const published = await publishPost(post.id);
+        setResults(published);
+        setScheduleConfirmed(null);
+      }
+
       setCaption("");
       setFile(null);
       setSelectedAccountIds([]);
@@ -252,6 +262,19 @@ export default function DashboardPage() {
               {publishing ? "Publication en cours…" : "Publier maintenant"}
             </button>
           </form>
+
+          {scheduleConfirmed && (
+            <div className="results">
+              <p className="schedule-confirmed">
+                ✓ Post programmé pour le{" "}
+                {new Date(scheduleConfirmed).toLocaleString("fr-FR", {
+                  dateStyle: "long",
+                  timeStyle: "short",
+                })}
+                . Il partira automatiquement à cette heure-là.
+              </p>
+            </div>
+          )}
 
           {results && (
             <div className="results">
@@ -429,6 +452,11 @@ export default function DashboardPage() {
           padding-top: 20px;
         }
         .results h3 { font-size: 1rem; margin-bottom: 12px; }
+        .schedule-confirmed {
+          color: var(--live);
+          font-size: 0.9rem;
+          margin: 0;
+        }
         .result-row {
           display: flex;
           align-items: center;
