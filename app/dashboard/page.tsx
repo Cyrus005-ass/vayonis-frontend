@@ -33,12 +33,15 @@ export default function DashboardPage() {
   const [connecting, setConnecting] = useState<string | null>(null);
 
   const [caption, setCaption] = useState("");
-  const [file, setFile] = useState<File | null>(null);
+  const [files, setFiles] = useState<File[]>([]);
+  const [postKind, setPostKind] = useState<"post_classique" | "reel">("post_classique");
   const [selectedAccountIds, setSelectedAccountIds] = useState<string[]>([]);
   const [scheduledAt, setScheduledAt] = useState("");
   const [publishing, setPublishing] = useState(false);
   const [results, setResults] = useState<PostTargetResult[] | null>(null);
   const [scheduleConfirmed, setScheduleConfirmed] = useState<string | null>(null);
+
+  const hasVideo = files.some((f) => f.type.startsWith("video/"));
   const [postError, setPostError] = useState<string | null>(null);
 
   async function loadAccounts() {
@@ -102,11 +105,12 @@ export default function DashboardPage() {
     try {
       const post = await createPost(
         caption,
-        scheduledAt ? new Date(scheduledAt).toISOString() : undefined
+        scheduledAt ? new Date(scheduledAt).toISOString() : undefined,
+        hasVideo ? postKind : "post_classique"
       );
 
-      if (file) {
-        await uploadPostMedia(post.id, file);
+      for (const f of files) {
+        await uploadPostMedia(post.id, f);
       }
 
       for (const accountId of selectedAccountIds) {
@@ -127,7 +131,7 @@ export default function DashboardPage() {
       }
 
       setCaption("");
-      setFile(null);
+      setFiles([]);
       setSelectedAccountIds([]);
       setScheduledAt("");
     } catch (err) {
@@ -218,13 +222,62 @@ export default function DashboardPage() {
             </label>
 
             <label className="field">
-              <span>Image ou vidéo (optionnel)</span>
+              <span>Images ou vidéos (optionnel — plusieurs possibles)</span>
               <input
                 type="file"
                 accept="image/*,video/*"
-                onChange={(e) => setFile(e.target.files?.[0] || null)}
+                multiple
+                onChange={(e) => {
+                  const newFiles = Array.from(e.target.files || []);
+                  setFiles((prev) => [...prev, ...newFiles]);
+                  e.target.value = "";
+                }}
               />
+              {files.length > 0 && (
+                <ul className="file-preview-list">
+                  {files.map((f, index) => (
+                    <li key={`${f.name}-${index}`} className="file-preview-item">
+                      <span className="file-preview-name">{f.name}</span>
+                      <button
+                        type="button"
+                        className="file-remove-btn"
+                        onClick={() =>
+                          setFiles((prev) => prev.filter((_, i) => i !== index))
+                        }
+                        aria-label={`Retirer ${f.name}`}
+                      >
+                        ✕
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              )}
             </label>
+
+            {hasVideo && (
+              <div className="field">
+                <span>Type de publication (Instagram)</span>
+                <div className="kind-toggle">
+                  <button
+                    type="button"
+                    className={postKind === "post_classique" ? "kind-btn active" : "kind-btn"}
+                    onClick={() => setPostKind("post_classique")}
+                  >
+                    Post classique
+                  </button>
+                  <button
+                    type="button"
+                    className={postKind === "reel" ? "kind-btn active" : "kind-btn"}
+                    onClick={() => setPostKind("reel")}
+                  >
+                    Reel
+                  </button>
+                </div>
+                <p className="field-hint">
+                  S&apos;applique à la vidéo publiée sur Instagram. Facebook publie toujours en post vidéo classique pour le moment.
+                </p>
+              </div>
+            )}
 
             <div className="field">
               <span>Publier sur</span>
@@ -408,6 +461,67 @@ export default function DashboardPage() {
           font-size: 0.94rem;
           font-family: inherit;
           resize: vertical;
+        }
+
+        .file-preview-list {
+          list-style: none;
+          padding: 0;
+          margin: 10px 0 0;
+          display: flex;
+          flex-direction: column;
+          gap: 6px;
+        }
+        .file-preview-item {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 10px;
+          background: var(--bg);
+          border: 1px solid var(--line);
+          border-radius: 8px;
+          padding: 8px 12px;
+          font-size: 0.82rem;
+        }
+        .file-preview-name {
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+          color: var(--text);
+        }
+        .file-remove-btn {
+          background: transparent;
+          border: none;
+          color: var(--danger);
+          cursor: pointer;
+          font-size: 0.9rem;
+          flex-shrink: 0;
+          padding: 2px 6px;
+        }
+
+        .kind-toggle {
+          display: flex;
+          gap: 8px;
+        }
+        .kind-btn {
+          flex: 1;
+          background: var(--bg);
+          border: 1px solid var(--line);
+          color: var(--text-muted);
+          padding: 10px 0;
+          border-radius: 8px;
+          font-size: 0.86rem;
+          cursor: pointer;
+          font-family: inherit;
+        }
+        .kind-btn.active {
+          border-color: var(--accent);
+          color: var(--text);
+          background: var(--accent-glow);
+        }
+        .field-hint {
+          font-size: 0.76rem;
+          color: var(--text-muted);
+          margin: 8px 0 0;
         }
 
         .target-grid { display: flex; flex-direction: column; gap: 8px; }

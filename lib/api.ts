@@ -188,14 +188,15 @@ export interface PostTargetResult {
 
 export function createPost(
   caption: string,
-  scheduledAt?: string
+  scheduledAt?: string,
+  contentType?: string
 ): Promise<Post> {
   return request<Post>("/api/v1/posts", {
     method: "POST",
     headers: authHeaders(),
     body: JSON.stringify({
       caption,
-      content_type: "post_classique",
+      content_type: contentType || "post_classique",
       ...(scheduledAt ? { scheduled_at: scheduledAt } : {}),
     }),
   });
