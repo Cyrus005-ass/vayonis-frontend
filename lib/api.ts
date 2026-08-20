@@ -8,6 +8,30 @@ export class ApiError extends Error {
   }
 }
 
+/**
+ * FastAPI error bodies come in different shapes:
+ * - {"detail": "some string"}                     -> simple string
+ * - {"detail": [{"loc": [...], "msg": "...", ...}]} -> Pydantic 422 validation array
+ * This always returns a plain, displayable string instead of leaking a raw
+ * object/array into the UI (which would render as "[object Object]").
+ */
+function extractErrorMessage(data: unknown, fallback: string): string {
+  if (data && typeof data === "object" && "detail" in data) {
+    const detail = (data as { detail: unknown }).detail;
+    if (typeof detail === "string") return detail;
+    if (Array.isArray(detail)) {
+      return detail
+        .map((item) =>
+          item && typeof item === "object" && "msg" in item
+            ? String((item as { msg: unknown }).msg)
+            : String(item)
+        )
+        .join(" ");
+    }
+  }
+  return fallback;
+}
+
 async function request<T>(
   path: string,
   options: RequestInit = {}
@@ -24,7 +48,7 @@ async function request<T>(
     let detail = "Une erreur est survenue.";
     try {
       const data = await response.json();
-      detail = data.detail || detail;
+      detail = extractErrorMessage(data, detail);
     } catch {
       // response wasn't JSON, keep the generic message
     }
@@ -70,7 +94,7 @@ export async function login(email: string, password: string): Promise<AuthRespon
     let detail = "Email ou mot de passe incorrect.";
     try {
       const data = await response.json();
-      detail = data.detail || detail;
+      detail = extractErrorMessage(data, detail);
     } catch {
       // keep generic message
     }
