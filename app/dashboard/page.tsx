@@ -27,6 +27,7 @@ const CONNECTABLE_PLATFORMS = ["facebook", "instagram", "linkedin"];
 
 export default function DashboardPage() {
   const router = useRouter();
+
   const [accounts, setAccounts] = useState<SocialAccount[]>([]);
   const [loadingAccounts, setLoadingAccounts] = useState(true);
   const [connecting, setConnecting] = useState<string | null>(null);
@@ -108,7 +109,9 @@ export default function DashboardPage() {
       }
 
       for (const accountId of selectedAccountIds) {
-        await addPostTarget(post.id, accountId);
+        const account = accounts.find((a) => a.id === accountId);
+        if (!account) continue;
+        await addPostTarget(post.id, accountId, account.platform);
       }
 
       const published = await publishPost(post.id);

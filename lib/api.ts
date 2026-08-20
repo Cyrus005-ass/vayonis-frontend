@@ -214,11 +214,15 @@ export async function uploadPostMedia(postId: string, file: File): Promise<void>
   }
 }
 
-export function addPostTarget(postId: string, socialAccountId: string): Promise<void> {
+export function addPostTarget(
+  postId: string,
+  socialAccountId: string,
+  platform: string
+): Promise<void> {
   return request(`/api/v1/posts/${postId}/targets`, {
     method: "POST",
     headers: authHeaders(),
-    body: JSON.stringify({ social_account_id: socialAccountId }),
+    body: JSON.stringify({ social_account_id: socialAccountId, platform }),
   });
 }
 
