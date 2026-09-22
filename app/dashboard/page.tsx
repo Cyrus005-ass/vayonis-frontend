@@ -12,6 +12,7 @@ import {
   uploadPostMedia,
   addPostTarget,
   publishPost,
+  getPost,
   SocialAccount,
   PostTargetResult,
   ApiError,
@@ -27,6 +28,7 @@ const CONNECTABLE_PLATFORMS = ["facebook", "instagram", "linkedin"];
 
 export default function DashboardPage() {
   const router = useRouter();
+  const [checkedAuth, setCheckedAuth] = useState(false);
 
   const [accounts, setAccounts] = useState<SocialAccount[]>([]);
   const [loadingAccounts, setLoadingAccounts] = useState(true);
@@ -62,6 +64,7 @@ export default function DashboardPage() {
       return;
     }
     // eslint-disable-next-line react-hooks/set-state-in-effect
+    setCheckedAuth(true);
     loadAccounts();
   }, [router]);
 
@@ -85,6 +88,24 @@ export default function DashboardPage() {
   function handleLogout() {
     clearToken();
     router.push("/login");
+  }
+
+  const POLL_INTERVAL_MS = 4000;
+  const POLL_MAX_ATTEMPTS = 45; // ~3 minutes, covers Reel processing time
+
+  async function pollUntilDone(postId: string) {
+    for (let attempt = 0; attempt < POLL_MAX_ATTEMPTS; attempt++) {
+      await new Promise((resolve) => setTimeout(resolve, POLL_INTERVAL_MS));
+      try {
+        const post = await getPost(postId);
+        setResults(post.targets);
+        const stillProcessing = post.targets.some((t) => t.status === "processing");
+        if (!stillProcessing) return;
+      } catch {
+        // A transient error while polling shouldn't stop the loop - the
+        // next attempt will simply try again.
+      }
+    }
   }
 
   async function handlePublish(event: FormEvent) {
@@ -125,9 +146,10 @@ export default function DashboardPage() {
         setResults(null);
         setScheduleConfirmed(scheduledAt);
       } else {
-        const published = await publishPost(post.id);
-        setResults(published);
+        const initial = await publishPost(post.id);
+        setResults(initial);
         setScheduleConfirmed(null);
+        pollUntilDone(post.id);
       }
 
       setCaption("");
@@ -142,6 +164,8 @@ export default function DashboardPage() {
       setPublishing(false);
     }
   }
+
+  if (!checkedAuth) return null;
 
   return (
     <main className="dashboard">
@@ -256,7 +280,7 @@ export default function DashboardPage() {
 
             {hasVideo && (
               <div className="field">
-                <span>Type de publication (Instagram)</span>
+                <span>Type de publication (vidéo)</span>
                 <div className="kind-toggle">
                   <button
                     type="button"
@@ -274,7 +298,7 @@ export default function DashboardPage() {
                   </button>
                 </div>
                 <p className="field-hint">
-                  S&apos;applique à la vidéo publiée sur Instagram. Facebook publie toujours en post vidéo classique pour le moment.
+                  S&apos;applique sur Instagram et Facebook. &quot;Post classique&quot; publie une vidéo normale ; &quot;Reel&quot; publie dans le format Reels de la plateforme.
                 </p>
               </div>
             )}
@@ -338,7 +362,11 @@ export default function DashboardPage() {
                     {PLATFORM_LABELS[r.platform] || r.platform}
                   </span>
                   <span className={`result-status ${r.status}`}>
-                    {r.status === "published" ? "✓ Publié" : "✗ Échec"}
+                    {r.status === "published"
+                      ? "✓ Publié"
+                      : r.status === "processing"
+                      ? "⏳ En cours..."
+                      : "✗ Échec"}
                   </span>
                   {r.error_message && <p className="result-error">{r.error_message}</p>}
                 </div>
@@ -582,6 +610,7 @@ export default function DashboardPage() {
         .result-platform { font-weight: 600; min-width: 90px; }
         .result-status.published { color: var(--live); }
         .result-status.failed { color: var(--danger); }
+        .result-status.processing { color: var(--accent); }
         .result-error {
           width: 100%;
           color: var(--text-muted);

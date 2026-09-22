@@ -189,14 +189,14 @@ export interface PostTargetResult {
 export function createPost(
   caption: string,
   scheduledAt?: string,
-  contentType?: string
+  contentType: string = "post_classique"
 ): Promise<Post> {
   return request<Post>("/api/v1/posts", {
     method: "POST",
     headers: authHeaders(),
     body: JSON.stringify({
       caption,
-      content_type: contentType || "post_classique",
+      content_type: contentType,
       ...(scheduledAt ? { scheduled_at: scheduledAt } : {}),
     }),
   });
@@ -230,6 +230,18 @@ export function addPostTarget(
 export function publishPost(postId: string): Promise<PostTargetResult[]> {
   return request<PostTargetResult[]>(`/api/v1/posts/${postId}/publish`, {
     method: "POST",
+    headers: authHeaders(),
+  });
+}
+
+export interface PostWithTargets {
+  id: string;
+  status: string;
+  targets: PostTargetResult[];
+}
+
+export function getPost(postId: string): Promise<PostWithTargets> {
+  return request<PostWithTargets>(`/api/v1/posts/${postId}`, {
     headers: authHeaders(),
   });
 }
