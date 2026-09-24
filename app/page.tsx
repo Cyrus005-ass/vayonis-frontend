@@ -145,6 +145,10 @@ export default function Home() {
  
       <footer className="footer">
         <span>© 2026 VAYONIS — construit depuis le Bénin.</span>
+        <div className="footer-links">
+          <Link href="/terms">Conditions d&apos;utilisation</Link>
+          <Link href="/privacy-policy">Politique de confidentialité</Link>
+        </div>
         <span>#BuildInPublic</span>
       </footer>
  
@@ -324,10 +328,22 @@ export default function Home() {
           padding: 30px 24px 50px;
           display: flex;
           justify-content: space-between;
+          align-items: center;
           flex-wrap: wrap;
           gap: 10px;
           color: var(--text-muted);
           font-size: 0.84rem;
+        }
+        .footer-links {
+          display: flex;
+          gap: 16px;
+        }
+        .footer-links a {
+          color: var(--text-muted);
+          text-decoration: none;
+        }
+        .footer-links a:hover {
+          color: var(--text);
         }
       `}</style>
     </main>

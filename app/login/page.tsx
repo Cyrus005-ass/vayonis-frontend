@@ -106,6 +106,11 @@ export default function LoginPage() {
         <p className="auth-switch">
           Pas encore de compte ? <a href="/signup">Inscrivez-vous</a>
         </p>
+
+        <div className="legal-links">
+          <Link href="/terms">Conditions d&apos;utilisation</Link>
+          <Link href="/privacy-policy">Politique de confidentialité</Link>
+        </div>
       </div>
 
       <style jsx>{`
@@ -220,6 +225,20 @@ export default function LoginPage() {
         .auth-switch a {
           color: var(--accent);
           text-decoration: none;
+        }
+        .legal-links {
+          display: flex;
+          justify-content: center;
+          gap: 16px;
+          margin-top: 18px;
+          font-size: 0.76rem;
+        }
+        .legal-links a {
+          color: var(--text-muted);
+          text-decoration: none;
+        }
+        .legal-links a:hover {
+          color: var(--accent);
         }
       `}</style>
     </main>

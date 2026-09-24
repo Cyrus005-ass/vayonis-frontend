@@ -279,6 +279,13 @@ export default function SignupPage() {
               </button>
             </form>
 
+            <p className="legal-consent">
+              En créant un compte, tu acceptes les{" "}
+              <Link href="/terms">Conditions d&apos;utilisation</Link>
+              {" "}et la{" "}
+              <Link href="/privacy-policy">Politique de confidentialité</Link>.
+            </p>
+
             <p className="auth-switch">
               Déjà un compte ? <a href="/login">Connectez-vous</a>
             </p>
@@ -420,6 +427,17 @@ export default function SignupPage() {
           margin: 22px 0 0;
         }
         .auth-switch a { color: var(--accent); text-decoration: none; }
+        .legal-consent {
+          font-size: 0.76rem;
+          line-height: 1.5;
+          color: var(--text-muted);
+          margin: 18px 0 0;
+          text-align: center;
+        }
+        .legal-consent a {
+          color: var(--accent);
+          text-decoration: none;
+        }
       `}</style>
     </main>
   );

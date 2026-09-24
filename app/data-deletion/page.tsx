@@ -43,7 +43,12 @@ export default function DataDeletionPage() {
           paramètres de votre compte Facebook, Instagram ou LinkedIn.
         </p>
 
-        <p><Link href="/privacy-policy">← Retour à la politique de confidentialité</Link></p>
+        <p><Link href="/" className="back-link">← Retour à l&apos;accueil</Link></p>
+
+        <div className="legal-links">
+          <Link href="/terms">Conditions d&apos;utilisation</Link>
+          <Link href="/privacy-policy">Politique de confidentialité</Link>
+        </div>
       </div>
 
       <style>{`
@@ -76,6 +81,14 @@ export default function DataDeletionPage() {
           border-radius: 12px;
           padding: 18px 22px;
           margin: 16px 0;
+        }
+        .legal-links {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 18px;
+          margin-top: 36px;
+          padding-top: 22px;
+          border-top: 1px solid var(--line);
         }
       `}</style>
     </main>

@@ -53,6 +53,11 @@ export default function PrivacyPolicyPage() {
 
         <h2>6. Contact</h2>
         <p>Pour toute question concernant cette politique de confidentialité, contactez-nous à : <a href="mailto:cyr-ass@gmail.com">cyr-ass@gmail.com</a></p>
+
+        <div className="legal-links">
+          <Link href="/terms">Conditions d&apos;utilisation</Link>
+          <Link href="/data-deletion">Suppression des données</Link>
+        </div>
       </div>
 
       <style>{`
@@ -79,6 +84,14 @@ export default function PrivacyPolicyPage() {
         ul { padding-left: 20px; }
         li { margin-bottom: 8px; }
         a { color: var(--accent); }
+        .legal-links {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 18px;
+          margin-top: 36px;
+          padding-top: 22px;
+          border-top: 1px solid var(--line);
+        }
       `}</style>
     </main>
   );

@@ -16,6 +16,7 @@ Application Next.js pour [VAYONIS](https://github.com/Cyrus005-ass/vayonis-front
 ### Pages publiques
 - **Page d'accueil** (`/`) — présentation du produit, principe, couverture actuelle, avancement, CTA
 - **Politique de confidentialité** (`/privacy-policy`) — données collectées, usage, sécurité, droits
+- **Conditions d’utilisation** (`/terms`) — règles d’accès et d’utilisation du service
 - **Suppression des données** (`/data-deletion`) — processus et délais de suppression de compte
 
 ### Authentification
@@ -86,6 +87,8 @@ app/
     page.tsx               # Tableau de bord : comptes, publications, résultats
   privacy-policy/
     page.tsx               # Page légale politique de confidentialité
+  terms/
+    page.tsx               # Page légale conditions d’utilisation
   data-deletion/
     page.tsx               # Page légale suppression des données
 lib/
