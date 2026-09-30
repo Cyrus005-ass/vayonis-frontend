@@ -1,6 +1,6 @@
 # VAYONIS Frontend
 
-Application Next.js pour [VAYONIS](https://github.com/Cyrus005-ass/vayonis-frontend) — la plateforme qui permet de publier une fois et de rayonner partout sur Facebook, Instagram et LinkedIn.
+Application Next.js pour [VAYONIS](https://github.com/Cyrus005-ass/vayonis-frontend) — la plateforme qui permet de publier une fois et de rayonner partout sur Facebook, Instagram, LinkedIn, avec TikTok et YouTube en préparation.
 
 ## Stack technique
 
@@ -26,6 +26,7 @@ Application Next.js pour [VAYONIS](https://github.com/Cyrus005-ass/vayonis-front
 
 ### Dashboard (`/dashboard`)
 - **Comptes connectés** — visualisation et connexion de comptes Facebook, Instagram, LinkedIn
+- **Squelettes TikTok et YouTube** — cartes visibles dans le dashboard, activation prévue après configuration des flags backend
 - **Création de publication** — texte, upload multiple d'images/vidéos, choix des plateformes cibles
 - **Programmation** — choix d'une date/heure de publication ultérieure
 - **Résultats** — statut de publication par plateforme (`published` / `failed`)

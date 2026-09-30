@@ -149,6 +149,8 @@ const CONNECT_PATHS: Record<string, string> = {
   facebook: "/api/v1/social-accounts/meta/connect",
   instagram: "/api/v1/social-accounts/instagram/connect",
   linkedin: "/api/v1/social-accounts/linkedin/connect",
+  tiktok: "/api/v1/social-accounts/tiktok/connect",
+  youtube: "/api/v1/social-accounts/youtube/connect",
 };
 
 export async function getConnectUrl(platform: string): Promise<string> {

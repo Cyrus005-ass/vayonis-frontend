@@ -22,9 +22,12 @@ const PLATFORM_LABELS: Record<string, string> = {
   facebook: "Facebook",
   instagram: "Instagram",
   linkedin: "LinkedIn",
+  tiktok: "TikTok",
+  youtube: "YouTube",
 };
 
-const CONNECTABLE_PLATFORMS = ["facebook", "instagram", "linkedin"];
+const CONNECTABLE_PLATFORMS = ["facebook", "instagram", "linkedin", "tiktok", "youtube"];
+const COMING_SOON_PLATFORMS = new Set(["tiktok", "youtube"]);
 
 export default function DashboardPage() {
   const router = useRouter();
@@ -194,6 +197,7 @@ export default function DashboardPage() {
             <div className="account-grid">
               {CONNECTABLE_PLATFORMS.map((platform) => {
                 const connectedAccounts = accounts.filter((a) => a.platform === platform);
+                const isComingSoon = COMING_SOON_PLATFORMS.has(platform);
                 return (
                   <div key={platform} className="account-card">
                     <div className="account-card-header">
@@ -202,7 +206,9 @@ export default function DashboardPage() {
                         <span className="badge-connected">Connecté</span>
                       )}
                     </div>
-                    {connectedAccounts.length > 0 ? (
+                    {isComingSoon ? (
+                      <p className="muted small">Bientôt disponible.</p>
+                    ) : connectedAccounts.length > 0 ? (
                       <ul className="account-list">
                         {connectedAccounts.map((a) => (
                           <li key={a.id}>{a.display_name}</li>
@@ -215,9 +221,11 @@ export default function DashboardPage() {
                       type="button"
                       className="btn-connect"
                       onClick={() => handleConnect(platform)}
-                      disabled={connecting === platform}
+                      disabled={isComingSoon || connecting === platform}
                     >
-                      {connecting === platform
+                      {isComingSoon
+                        ? "Bientôt disponible"
+                        : connecting === platform
                         ? "Redirection…"
                         : connectedAccounts.length > 0
                         ? "Connecter un autre compte"
@@ -424,7 +432,7 @@ export default function DashboardPage() {
 
         .account-grid {
           display: grid;
-          grid-template-columns: repeat(3, 1fr);
+          grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
           gap: 14px;
         }
         @media (max-width: 720px) { .account-grid { grid-template-columns: 1fr; } }
