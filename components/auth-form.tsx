@@ -54,7 +54,7 @@ export function AuthForm({ mode }: { mode: 'connexion' | 'inscription' }) {
       <div className="quiz-meta"><span>Votre direction</span><b>{step} / {questions.length}</b></div>
       <h2>{question.title}</h2>
       <div className="quiz-options">{question.options.map((option) => <button key={option} type="button" className={answers[step - 1] === option ? 'selected' : ''} onClick={() => setAnswers((current) => { const next = [...current]; next[step - 1] = option; return next })}>{option}{answers[step - 1] === option && <Check />}</button>)}</div>
-      <div className="quiz-actions"><button className="quiz-back" type="button" onClick={() => setStep((value) => value - 1)}><ArrowLeft /> Retour</button><button className="auth-submit" type="submit" disabled={!answers[step - 1]}>{step === questions.length ? 'Entrer dans Vayonis' : 'Continuer'} <ArrowRight /></button></div>
+      <div className="quiz-actions"><button className="quiz-back" type="button" onClick={() => setStep((value) => value - 1)}><ArrowLeft /> Retour</button><button className="auth-submit" type="submit" disabled={!answers[step - 1]} onClick={submit}>{step === questions.length ? 'Entrer dans Vayonis' : 'Continuer'} <ArrowRight /></button></div>
     </form>
   }
 
