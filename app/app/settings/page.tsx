@@ -1,13 +1,15 @@
 'use client'
 
-import { useState } from 'react'
-import Link from 'next/link'
-import { ArrowLeft, Check, Save, ShieldAlert, Sparkles, Trash2 } from 'lucide-react'
-import '../../dashboard.css'
+import { useEffect, useState } from 'react'
+import { api } from '@/lib/api'
 
 export default function SettingsPage() {
-  const [saved, setSaved] = useState(false)
-  const [deleted, setDeleted] = useState(false)
-  const [directives, setDirectives] = useState('Analyse mes comptes avec un regard stratégique. Signale les sujets qui reviennent, les formats qui fonctionnent le mieux, les angles qui manquent et les prochaines publications à tester. Garde une voix simple, humaine et précise.')
-  return <main className="settings-page app-shell"><section className="settings-wrap"><Link className="settings-back" href="/app"><ArrowLeft /> Retour à l’espace</Link><div className="settings-heading"><div><span className="eyebrow-light">VOTRE ESPACE</span><h1>Réglages</h1><p>Votre profil, vos préférences et la façon dont Vayonis vous accompagne.</p></div><button className="auth-submit settings-save" onClick={() => { setSaved(true); window.setTimeout(() => setSaved(false), 2600) }}>{saved ? <><Check /> Enregistré</> : <><Save /> Enregistrer</>}</button></div><div className="settings-grid"><section className="settings-card"><div className="settings-card-heading"><div><span className="settings-icon">JM</span><h2>Informations personnelles</h2></div><span>Profil</span></div><div className="settings-fields"><label>Nom complet<input defaultValue="Julie Martin" /></label><label>Adresse e-mail<input type="email" defaultValue="julie@exemple.fr" /></label><label>Votre activité<input defaultValue="Créatrice indépendante" /></label><label>Fuseau horaire<select defaultValue="Europe/Paris"><option value="Europe/Paris">Paris — Europe/Paris</option><option value="America/Montreal">Montréal — America/Montreal</option></select></label></div></section><section className="settings-card ai-directives"><div className="settings-card-heading"><div><span className="settings-icon"><Sparkles /></span><h2>Directives pour l’analyse IA</h2></div><span>Personnalisé</span></div><p>Expliquez à Vayonis ce qu’il doit observer dans vos comptes et comment formuler ses recommandations.</p><textarea value={directives} onChange={(event) => setDirectives(event.target.value)} rows={6} /><div className="directive-chips"><button onClick={() => setDirectives((value) => `${value} Priorise les idées faciles à produire.`)}>Facile à produire</button><button onClick={() => setDirectives((value) => `${value} Compare toujours les réseaux entre eux.`)}>Comparer les réseaux</button><button onClick={() => setDirectives((value) => `${value} Alerte-moi quand une opportunité est sous-exploitée.`)}>Repérer les manques</button></div></section><section className="settings-card"><div className="settings-card-heading"><div><span className="settings-icon">◌</span><h2>Connexions et abonnement</h2></div><span>Actif</span></div><div className="settings-row"><div><b>Réseaux connectés</b><small>Instagram, LinkedIn et Facebook</small></div><Link href="/app/accounts">Gérer les comptes</Link></div><div className="settings-row"><div><b>Formule Vayonis</b><small>Studio — renouvellement le 24 novembre</small></div><button>Voir l’abonnement</button></div></section><section className="settings-card danger-card"><div className="settings-card-heading"><div><span className="settings-icon danger"><ShieldAlert /></span><h2>Zone sensible</h2></div></div><p>La suppression de votre compte efface votre espace, vos brouillons et vos connexions. Cette action ne peut pas être annulée.</p>{deleted ? <div className="delete-confirm">Demande de suppression enregistrée. Nous vous contacterons avant la suppression définitive.</div> : <button className="delete-button" onClick={() => setDeleted(true)}><Trash2 /> Supprimer mon compte</button>}</section></div></section></main>
+  const [profile, setProfile] = useState<any>(null)
+  useEffect(() => { api.profile.get().then(setProfile).catch(() => {}) }, [])
+  return (
+    <div>
+      <h1>Paramètres</h1>
+      {profile ? <p>{profile.name} — {profile.email}</p> : <p>Chargement…</p>}
+    </div>
+  )
 }

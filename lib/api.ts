@@ -61,6 +61,9 @@ export const api = {
     connect: (network: string) => request<{ authorization_url: string }>(`/api/v1/social-accounts/${network}/connect`),
     disconnect: (id: string) => request<void>(`/api/v1/social-accounts/${id}`, { method: 'DELETE' }),
   },
+  analytics: {
+    get: () => request<any>('/api/v1/analytics'),
+  },
   posts: {
     list: () => request<any[]>('/api/v1/posts'),
     create: (post: any) => request<any>('/api/v1/posts', { method: 'POST', body: JSON.stringify(post) }),
