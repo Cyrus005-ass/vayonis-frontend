@@ -45,10 +45,16 @@ export const api = {
       return data
     },
     register: async (email: string, password: string) => {
-      const data = await request<any>('/api/v1/auth/register', {
+      const r = await fetch(`${API_URL}/api/v1/auth/register`, {
         method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password, onboarding: { profile_type: 'creator', age_range: '25-34', goal: 'publish', current_platforms: [] } }),
       })
+      if (!r.ok) {
+        const err = await r.json().catch(() => ({}))
+        throw new Error(err.detail || 'Inscription impossible.')
+      }
+      const data = await r.json()
       if (data.access_token) localStorage.setItem(TOKEN_KEY, data.access_token)
       return data
     },

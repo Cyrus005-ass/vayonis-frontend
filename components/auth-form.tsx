@@ -40,8 +40,8 @@ export function AuthForm({ mode }: { mode: 'connexion' | 'inscription' }) {
       else await api.auth.login(email, password)
       router.push('/app')
       router.refresh()
-    } catch {
-      setError('Impossible de valider ces informations. Vérifiez vos champs puis réessayez.')
+    } catch (e: any) {
+      setError(e?.message || 'Impossible de valider ces informations. Vérifiez vos champs puis réessayez.')
     } finally {
       setLoading(false)
     }
